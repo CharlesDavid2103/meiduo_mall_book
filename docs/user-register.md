@@ -17,18 +17,16 @@
 - #### 	追加导包路径
 
   ```shell
-  #查看导包路径
-  #meiduo_mall/meiduo_mall/settings/dev.py 添加以下内容
+  # 查看导包路径
+  # meiduo_mall/meiduo_mall/settings/dev.py 添加以下内容
   # import sys
   # print(sys.path)
   
-  
-  #'meiduo_project/meiduo_mall/meiduo_mall/apps'
-  
+  # 'meiduo_project/meiduo_mall/meiduo_mall/apps'
   #查看项目BASE_DIR
   #'~/projects/meiduo_project/meiduo_mall/meiduo_mall'
   #追加导包路径
-  sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+  #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
   # print(sys.path)
   
   #注册用户模块应用
@@ -54,8 +52,8 @@
   <head>
       <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
       <title>美多商城-注册</title>
-      <link rel="stylesheet" type="text/css" href="\{\{ static('css/reset.css') \}\}">
-      <link rel="stylesheet" type="text/css" href="\{\{ static('css/main.css') \}\}">
+      <link rel="stylesheet" type="text/css" href="{{ static('css/reset.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('css/main.css') }}">
   </head>
   
   #定义用户注册视图
@@ -105,13 +103,13 @@
         #组：对多个具有相同权限的用户进行统一管理，MIS系统常用到。
         #密码：一个可配置的密码哈希系统，设置密码、密码校验。
         
-#Django默认用户模型类
+    #Django默认用户模型类
     #Django认证系统中提供了用户模型类User保存用户的数据。
         #User对象是认证系统的核心。
     #Django认证系统用户模型类位置
         #django.contrib.auth.models.User
  
-#父类AbstractUser介绍
+	#父类AbstractUser介绍
 
     #User对象基本属性
         #创建用户(注册用户)必选： username、password
@@ -119,42 +117,38 @@
         #判断用户是否通过认证(是否登录)：is_authenticated
     #创建用户(注册用户)的方法
         #user = User.objects.create_user(username, email, password, **extra_fields)
-   # 用户认证(用户登录)的方法
+   	#用户认证(用户登录)的方法
         #from django.contrib.auth import authenticate
         #user = authenticate(username=username, password=password, **kwargs)
     #处理密码的方法
         #设置密码：set_password(raw_password)
         #校验密码：check_password(raw_password)
+        
+    # 自定义用户模型类 
+    #meiduo_mall/meiduo_mall/apps/users/models.py
+    from django.db import models
+    from django.contrib.auth.models import AbstractUser
 
+    # Create your models here.
+	class User(AbstractUser):
+        """自定义用户模型类"""
+        mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
 
-# 自定义用户模型类 
-#meiduo_mall/meiduo_mall/apps/users/models.py
-from django.db import models
-from django.contrib.auth.models import AbstractUser
+        class Meta:
+            db_table = 'tb_users'
+            verbose_name = '用户'
+            verbose_name_plural = verbose_name
 
-# Create your models here.
-
-
-class User(AbstractUser):
-    """自定义用户模型类"""
-    mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
-
-    class Meta:
-        db_table = 'tb_users'
-        verbose_name = '用户'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.username
+        def __str__(self):
+            return self.username
 
  ```
 
+#### 迁移用户模型类
 
-- #### 迁移用户模型类
  ```shell
 #思考：为什么Django默认用户模型类是User？
-
-    #阅读源代码：'django.conf.global_settings'
+	#阅读源代码：'django.conf.global_settings'
         #AUTH_USER_MODEL = 'auth.User'
     #结论：
         #Django用户模型类是通过全局配置项 AUTH_USER_MODEL 决定的
